@@ -98,7 +98,7 @@ Then save the updates into the file by typing Ctrl + X then Y then Enter.
 ```sh
 $ spark-class org.apache.spark.deploy.master.Master
 ```
->> Then notice the output it should give you the following:
+> Then notice the output it should give you the following:
 ```sh
 2019-03-13 16:06:17 INFO  Master:54 - Starting Spark master at spark://192.168.56.1:7077
 ...
@@ -130,3 +130,53 @@ Note we specified the master attribute in the previous command to ask the driver
 >If sucessful the output should return the following: **Look at Step 4**
 
 # Step 6: Perform basic Scala 
+
+#### Create a class named Person
+```sh
+$ case class Person (name:String, age:Int, income:Double)
+```
+#### instantiate a new object of class Person
+```sh
+$ val p1 = Person("Ahmed", 25, 1.0)
+```
+#### import Random class from Scala libiraires
+```sh
+$ import scala.util.Random
+$ import scala.util.Random._
+```
+#### Create an array of objects of type Person 
+```sh
+$ import scala.util.Random
+$ import scala.util.Random._
+```
+#### Create an array of objects of type Person 
+```sh
+$ val population = Array.fill(1000000)(Person(nextString(5),nextInt(100), 50000*nextDouble()))
+```
+#### Prepare and convert the population array into RDD created for spark parallelize operation
+```sh
+$ val populationRDD = sc.parallelize(population)
+```
+#### To create a DataFrame and a Dataset from the RDD object 
+```sh
+$ val dfPopulation = populationRDD.toDF
+$ val dsPopulation = populationRDD.toDS
+```
+Note in the UI: Select the executors tab the number of active of active executors and the number of active RDDs.
+
+#### Perform basic operation of the RDD object
+Notice that operation is not carried out untill the methods (take() / toDebugString) were invoked.
+```sh
+$ populationRDD.filter(_.age < 25)
+$ populationRDD.filter(_.age < 25).take()
+$ populationRDD.filter(_.age < 25).map((p:Person) => p.age*p.income).toDebugString
+$ populationRDD.filter(_.age < 25).map((p:Person) => p.age*p.income).take(5)
+```
+#### Perform more complex operation and notice in the UI how are the opertions distributed into Jobs
+Notice the details of the of each Job and how they are divided into stages.
+```sh
+$ dsPopulation.filter((p:Person) => p.age > 25).count
+$ dsPopulation.filter((p:Person) => p.age > 25).groupBy(round($"age" / 5) * 5).agg(avg($"income")).show
+$ dsPopulation.filter((p:Person) => p.age > 25).groupBy(round($"age" / 5) * 5).agg(avg($"income")).withColumnRenamed("(round((age / 5), 0) * 5)", "ageCategory").orderBy($"ageCategory")
+$ dsPopulation.filter((p:Person) => p.age > 25).groupBy(round($"age" / 5) * 5).agg(avg($"income")).withColumnRenamed("(round((age / 5), 0) * 5)", "ageCategory").orderBy($"ageCategory").show
+```
