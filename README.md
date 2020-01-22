@@ -1,4 +1,4 @@
-# Apache Spark - Realtime Data Analystics Course - UOIT
+# Apache Spark - Realtime Data Analystics Course - OntarioTechU
 
 [![N|Solid](https://spark.apache.org/images/spark-logo-trademark.png)](https://spark.apache.org/)
 
